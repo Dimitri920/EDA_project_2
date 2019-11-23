@@ -28,8 +28,27 @@ Now that all our data is loaded in, the next step would be to list all of the di
 
 ```{r}
 #Load in the needed packages
+library(ggplot2)
+library(reshape2)
 library(dplyr)
 library(readr)
+library(plotly)
+library(tidyverse)
+
+#Clean the data by including country names that have been changed
+correction <- c("Antigua and Barbuda"="Antigua", "Bahamas, The"="Bahamas", "Brunei Darussalam"="Brunei", "Cabo Verde"="Cape Verde", "Congo, Dem. Rep."="Democratic Republic of the Congo", "Congo, Rep."="Republic of Congo", "Cote d'Ivoire"="Ivory Coast", "Egypt, Arab Rep."="Egypt", "Faeroe Islands"="Faroe Islands", "Gambia, The"="Gambia", "Iran, Islamic Rep."="Iran", "Korea, Dem. Rep."="North Korea", "Korea, Rep."="South Korea", "Kyrgyz Republic"="Kyrgyzstan", "Lao PDR"="Laos", "Macedonia, FYR"="Macedonia", "Micronesia, Fed. Sts."="Micronesia", "Russian Federation"="Russia", "Slovak Republic"="Slovakia", "St. Lucia"="Saint Lucia", "St. Martin (French part)"="Saint Martin", "St. Vincent and the Grenadines"="Saint Vincent", "Syrian Arab Republic"="Syria", "Trinidad and Tobago"="Trinidad", "United Kingdom"="UK", "United States"="USA", "Venezuela, RB"="Venezuela", "Virgin Islands (U.S.)"="Virgin Islands", "Yemen, Rep."="Yemen")
+
+#Filter the Indicators to include the correct names
+ll=levels(Indicators$CountryName)
+ll[ll %in% names(correction)] <- correction
+factor(Indicators$CountryName,levels=ll)
+
+for (c in names((ll))) {
+  Indicators[Indicators$CountryName==c,"CountryName"] = correction[c]
+}
+
+#Make the country name a factor
+Indicators$CountryName <- as.factor(Indicators$CountryName)
 
 #Get the counts
 counts <- Indicators %>%
@@ -38,8 +57,72 @@ counts <- Indicators %>%
             NumYears     = n_distinct(Year),
             FirstYear    = min(Year),
             LastYear     = max(Year))
-
 counts$IndicatorName <- gsub("\\$", "dollar", counts$IndicatorName)
 View(counts)
+
+#Create BRICS indicator
+brics <- c("BRA", "RUS", "IND", "CHN", "ZAF")
+brics.Indicators <- subset(Indicators, CountryCode %in% brics)
+
+#Create the GDP growth (annual %)
+GDP_growth_annual_percent <- subset(brics.Indicators, IndicatorCode == "NY.GDP.MKTP.KD.ZG")
+
+#Plot the variable
+ggplot(data = GDP_growth_annual_percent, aes(Year, Value)) +
+    geom_line(aes(color = CountryCode), size = 0.85) +
+    scale_x_continuous(breaks = seq(1960, 2014, 5)) +
+    theme_bw(base_size = 12, base_family = "Helvetica")+
+    theme_classic() +
+    labs(title = "GDP growth increased for most BRICS, especially China") +
+    xlab("Year") +
+    ylab("Annual Percent Growth")
+```
+
+
+```{r}
+#Create the GDP per capita variable current US dollar
+GDP_per_capita_current_US <- subset(brics.Indicators, IndicatorCode == "NY.GDP.PCAP.CD")
+
+#Plot the variable
+ggplot(data = GDP_per_capita_current_US, aes(Year, Value)) +
+    geom_line(aes(color = CountryCode), size = 0.85) +
+    scale_x_continuous(breaks = seq(1960, 2014, 5)) +
+    theme_bw(base_size = 12, base_family = "Helvetica")+
+    theme_classic() +
+    labs(title = "GDP per capita has risen sharply for most countries since the early 2000s") +
+    xlab("Year") +
+    ylab("Current US Dollar")
+```
+
+
+```{r}
+#Create the GDP per capita, PPP (current international $)
+GDP_per_capita_PPP_international <- subset(brics.Indicators, IndicatorCode == "NY.GDP.PCAP.PP.CD")
+
+#Plot the variable
+ggplot(data = GDP_per_capita_PPP_international, aes(Year, Value)) +
+    geom_line(aes(color = CountryCode), size = 0.85) +
+    scale_x_continuous(breaks = seq(1960, 2014, 5)) +
+    theme_bw(base_size = 12, base_family = "Helvetica")+
+    theme_classic() +
+    labs(title = "GDP per capita, converted through PPP shows Russia is ahead") +
+    xlab("Year") +
+    ylab("Current International Dollar")
+```
+
+
+```{r}
+#Check for adjusted net national income
+adjusted_net_national_income <- subset(brics.Indicators, IndicatorCode == "NY.ADJ.NNTY.CD")
+
+#Plot the variable
+ggplot(data = adjusted_net_national_income, aes(Year, Value)) +
+    geom_line(aes(color = CountryCode), size = 0.85) +
+    scale_x_continuous(breaks = seq(1960, 2014, 5)) +
+    theme_bw(base_size = 12, base_family = "Helvetica")+
+    theme_classic() +
+    labs(title = "Adjusted Net National Income has risen sharply for China") +
+    xlab("Year") +
+    ylab("Current US dollar")
 ```
 
