@@ -35,18 +35,6 @@ library(readr)
 library(plotly)
 library(tidyverse)
 
-#Clean the data by including country names that have been changed
-correction <- c("Antigua and Barbuda"="Antigua", "Bahamas, The"="Bahamas", "Brunei Darussalam"="Brunei", "Cabo Verde"="Cape Verde", "Congo, Dem. Rep."="Democratic Republic of the Congo", "Congo, Rep."="Republic of Congo", "Cote d'Ivoire"="Ivory Coast", "Egypt, Arab Rep."="Egypt", "Faeroe Islands"="Faroe Islands", "Gambia, The"="Gambia", "Iran, Islamic Rep."="Iran", "Korea, Dem. Rep."="North Korea", "Korea, Rep."="South Korea", "Kyrgyz Republic"="Kyrgyzstan", "Lao PDR"="Laos", "Macedonia, FYR"="Macedonia", "Micronesia, Fed. Sts."="Micronesia", "Russian Federation"="Russia", "Slovak Republic"="Slovakia", "St. Lucia"="Saint Lucia", "St. Martin (French part)"="Saint Martin", "St. Vincent and the Grenadines"="Saint Vincent", "Syrian Arab Republic"="Syria", "Trinidad and Tobago"="Trinidad", "United Kingdom"="UK", "United States"="USA", "Venezuela, RB"="Venezuela", "Virgin Islands (U.S.)"="Virgin Islands", "Yemen, Rep."="Yemen")
-
-#Filter the Indicators to include the correct names
-ll=levels(Indicators$CountryName)
-ll[ll %in% names(correction)] <- correction
-factor(Indicators$CountryName,levels=ll)
-
-for (c in names((ll))) {
-  Indicators[Indicators$CountryName==c,"CountryName"] = correction[c]
-}
-
 #Make the country name a factor
 Indicators$CountryName <- as.factor(Indicators$CountryName)
 
@@ -126,3 +114,201 @@ ggplot(data = adjusted_net_national_income, aes(Year, Value)) +
     ylab("Current US dollar")
 ```
 
+
+```{r}
+#Check for Poverty gap at $1.90 a day (2011 PPP) (%)
+poverty_gap <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "SI.POV.GAPS" |
+                      IndicatorCode == "NY.GDP.PCAP.CD") %>%
+  dplyr::filter(      Year == 1993
+                      ) %>%
+  pivot_wider(names_from = "IndicatorCode",
+              values_from = "Value")
+
+pg_a <- filter(poverty_gap, IndicatorName == "GDP per capita (current US$)") %>%
+  select(-IndicatorName, -SI.POV.GAPS)
+
+pg_b <- filter(poverty_gap, IndicatorName == "Poverty gap at $1.90 a day (2011 PPP) (%)") %>%
+  select(CountryCode, SI.POV.GAPS)
+
+poverty_gap <- left_join(pg_a, pg_b, by = "CountryCode")
+
+ggplot(data = poverty_gap,
+       aes(x = SI.POV.GAPS,
+           y = NY.GDP.PCAP.CD,
+           color = CountryName)) +
+  geom_point(size = 3) +
+  labs(y = "GDP per capita",
+       x = "Poverty gap at $1.90 a day (2011 PPP) (%)",
+       title = "Higher per capita GDP is associated with a smaller poverty gap",
+       caption = "Data from 1993") + 
+  xlim(0,50) +
+  theme_classic()
+```
+
+
+
+```{r}
+#Check for Poverty gap at $3.10 a day (2011 PPP) (%)
+poverty_gap <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "SI.POV.GAP2" |
+                      IndicatorCode == "NY.GDP.PCAP.CD") %>%
+  dplyr::filter(      Year == 1993
+                      ) %>%
+  pivot_wider(names_from = "IndicatorCode",
+              values_from = "Value")
+
+pg_a <- filter(poverty_gap, IndicatorName == "GDP per capita (current US$)") %>%
+  select(-IndicatorName, -SI.POV.GAP2)
+
+pg_b <- filter(poverty_gap, IndicatorName == "Poverty gap at $3.10 a day (2011 PPP) (%)") %>%
+  select(CountryCode, SI.POV.GAP2)
+
+poverty_gap <- left_join(pg_a, pg_b, by = "CountryCode")
+
+ggplot(data = poverty_gap,
+       aes(x = SI.POV.GAP2,
+           y = NY.GDP.PCAP.CD,
+           color = CountryName)) +
+  geom_point(size = 3) +
+  labs(y = "GDP per capita",
+       x = "Poverty gap at $3.10 a day (2011 PPP) (%)",
+       title = "Higher per capita GDP is associated with a smaller poverty gap",
+       caption = "Data from 1993") + 
+  xlim(0,50) +
+  theme_classic()
+```
+
+
+
+```{r}
+#Check for Poverty headcount ratio at $1.90 a day
+poverty_gap <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "SI.POV.DDAY" |
+                      IndicatorCode == "NY.GDP.PCAP.CD") %>%
+  dplyr::filter(      Year == 1993
+                       ) %>%
+  pivot_wider(names_from = "IndicatorCode",
+              values_from = "Value")
+
+pg_a <- filter(poverty_gap, IndicatorName == "GDP per capita (current US$)") %>%
+  select(-IndicatorName, -SI.POV.DDAY)
+
+pg_b <- filter(poverty_gap, IndicatorName == "Poverty headcount ratio at $1.90 a day (2011 PPP) (% of population)") %>%
+  select(CountryCode, SI.POV.DDAY)
+
+poverty_gap <- left_join(pg_a, pg_b, by = "CountryCode")
+
+ggplot(data = poverty_gap,
+       aes(x = SI.POV.DDAY,
+           y = NY.GDP.PCAP.CD,
+           color = CountryName)) +
+  geom_point(size = 3) +
+  xlim(0,100) +
+  labs(y = "GDP per capita",
+       x = "Poverty headcount ratio at $1.90 a day (2011 PPP) (% of population)",
+       title = "Higher per capita GDP is associated with a smaller poverty headcount",
+       caption = "Data from 1993") + 
+  theme_classic()
+```
+
+
+
+```{r}
+#Check for Poverty headcount ratio at $3.10 a day
+poverty_gap <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "SI.POV.2DAY" |
+                      IndicatorCode == "NY.GDP.PCAP.CD") %>%
+  dplyr::filter(      Year == 1993
+                      ) %>%
+  pivot_wider(names_from = "IndicatorCode",
+              values_from = "Value")
+
+pg_a <- filter(poverty_gap, IndicatorName == "GDP per capita (current US$)") %>%
+  select(-IndicatorName, -SI.POV.2DAY)
+
+pg_b <- filter(poverty_gap, IndicatorName == "Poverty headcount ratio at $3.10 a day (2011 PPP) (% of population)") %>%
+  select(CountryCode, SI.POV.2DAY)
+
+poverty_gap <- left_join(pg_a, pg_b, by = "CountryCode")
+
+ggplot(data = poverty_gap,
+       aes(x = SI.POV.2DAY,
+           y = NY.GDP.PCAP.CD,
+           color = CountryName)) +
+  geom_point(size = 3) +
+  xlim(0,100) +
+  labs(y = "GDP per capita",
+       x = "Poverty headcount ratio at $3.10 a day (2011 PPP) (% of population)",
+       title = "Higher per capita GDP is associated with a smaller poverty headcount",
+       caption = "Data from 1993") + 
+  theme_classic()
+```
+
+
+```{r}
+#Check out Agricultural land (% of land area)
+agriculture_percent <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "AG.LND.AGRI.ZS" |
+                      IndicatorCode == "NY.GDP.PCAP.CD")  %>%
+  pivot_wider(names_from = "IndicatorCode",
+              values_from = "Value")
+
+ap_a <- filter(agriculture_percent, IndicatorName == "GDP per capita (current US$)") %>%
+  select(-IndicatorName, -AG.LND.AGRI.ZS)
+
+ap_b <- filter(agriculture_percent, IndicatorName == "Agricultural land (% of land area)") %>%
+  select(CountryCode, AG.LND.AGRI.ZS, Year)
+
+agriculture_percent <- left_join(ap_a, ap_b, by = c("CountryCode" = "CountryCode", "Year" = "Year"))
+
+start <- filter(agriculture_percent, Year == 1961 | Year == 1992 & CountryName == "Russian Federation")
+
+ggplot(data = agriculture_percent,
+       aes(x = AG.LND.AGRI.ZS,
+           y = NY.GDP.PCAP.CD,
+           color = CountryName)) +
+  geom_path() +
+  geom_point(data = start,
+             aes(
+               x = AG.LND.AGRI.ZS,
+               y = NY.GDP.PCAP.CD)
+             ) +
+  xlim(0,100) +
+  labs(y = "GDP per capita",
+       x = "Agricultural land (% of land area)",
+       title = "Changes in agricultural holdings seem unrelated to changes in GDP per capita",
+       caption = "Dot indicates first year of data."
+       ) + 
+  theme_classic()
+```
+
+
+```{r}
+agriculture_employment <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "SL.AGR.EMPL.ZS" |
+                      IndicatorCode == "NY.GDP.PCAP.CD")  %>%
+  pivot_wider(names_from = "IndicatorCode",
+              values_from = "Value")
+
+em_a <- filter(agriculture_employment, IndicatorName == "GDP per capita (current US$)") %>%
+  select(-IndicatorName, -SL.AGR.EMPL.ZS)
+
+em_b <- filter(agriculture_employment, IndicatorName == "Employment in agriculture (% of total employment)") %>%
+  select(CountryCode, SL.AGR.EMPL.ZS, Year)
+
+agriculture_employment <- left_join(em_a, em_b, by = c("CountryCode" = "CountryCode", "Year" = "Year"))
+
+ggplot(data = agriculture_employment,
+       aes(x = SL.AGR.EMPL.ZS,
+           y = NY.GDP.PCAP.CD,
+           color = CountryName)) +
+  geom_path() +
+  geom_point() +
+  xlim(0,100) +
+  labs(y = "GDP per capita",
+       x = "Employment in agriculture (% of total employment)",
+       title = "A decrease in the employment of agriculture does lead to an increase in GDP"
+       ) + 
+  theme_classic()
+```
