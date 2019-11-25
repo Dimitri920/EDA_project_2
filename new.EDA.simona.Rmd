@@ -1,0 +1,113 @@
+---
+title: "EDA"
+author: "Simona Rahi"
+date: "11/21/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load all the csv files
+Country <- read.csv("~/Desktop/Data Science/data munging and EDA/EDA group 2/world-development-indicators/Country.csv")
+CountryNotes <- read.csv("~/Desktop/Data Science/data munging and EDA/EDA group 2/world-development-indicators/CountryNotes.csv")
+Footnotes <- read.csv("~/Desktop/Data Science/data munging and EDA/EDA group 2/world-development-indicators/Footnotes.csv")
+Indicators <- read.csv("~/Desktop/Data Science/data munging and EDA/EDA group 2/world-development-indicators/Indicators.csv")
+Series <- read.csv("~/Desktop/Data Science/data munging and EDA/EDA group 2/world-development-indicators/Series.csv", comment.char="#")
+SeriesNotes <- read.csv("~/Desktop/Data Science/data munging and EDA/EDA group 2/world-development-indicators/SeriesNotes.csv")
+```
+
+Now that all our data is loaded in, the next step would be to list all of the different indicators present in this dataset.
+
+```{r}
+#Load in the needed packages
+library(dplyr)
+library(readr)
+#Get the counts
+counts <- Indicators %>%
+  group_by(IndicatorCode, IndicatorName) %>%
+  summarise(NumCountries = n_distinct(CountryName),
+            NumYears     = n_distinct(Year),
+            FirstYear    = min(Year),
+            LastYear     = max(Year))
+counts$IndicatorName <- gsub("\\$", "dollar", counts$IndicatorName)
+View(counts)
+```
+```{r}
+#subsetting for BRICS countries
+
+brics <- Indicators %>%
+  filter(Indicators$CountryName == "Brazil" | Indicators$CountryName == "India" | Indicators$CountryName == "South Africa" | Indicators$CountryName == "Russian Federation" | Indicators$CountryName == "China")
+
+#View(brics)
+```
+
+```{r}
+library(ggplot2)
+library(ggvis)
+#install.packages("viridis")
+library(viridis)
+library(tidyverse)
+```
+
+```{r}
+net_national_income <- subset(brics, IndicatorName == "Adjusted net national income (current US$)")
+
+ggplot(net_national_income, aes(Year, Value, colour = CountryName)) + 
+  geom_point()
+```
+
+```{r}
+#subsetting the poverty data. Variable used: Poverty headcount ratio at $3.10 a day (% of population)
+
+poverty <- subset(brics, IndicatorCode == "SI.POV.2DAY")
+
+
+```
+
+```{r}
+
+ggplot(data = poverty, mapping = aes(x = CountryName, y= Value)) +
+  geom_boxplot()
+poverty %>%
+  ggplot( aes(x=CountryName, y=Value, fill=CountryName)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.7, option="A") +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Violin chart showing how BRICS countries vary across poverty values") +
+    xlab("")
+```
+
+```{r}
+# filter four different expenditures as % of GDP
+expenditures <- brics %>%
+  filter(brics$IndicatorName == "Military expenditure (% of GDP)" | brics$IndicatorName == "Research and development expenditure (% of GDP)" | brics$IndicatorName == "Health expenditure, total (% of GDP)" | brics$IndicatorName == "Government expenditure on education as % of GDP (%)")
+
+#View(expenditures)
+
+ggplot(data=expenditures, aes(x=CountryName, y=Value, fill=IndicatorName)) +
+  geom_bar(stat="identity")
+
+```
+
+```{r}
+all_in_all <- brics %>%
+  filter(IndicatorCode == "SL.UEM.TOTL.ZS" | IndicatorCode == "SH.DYN.MORT" | IndicatorCode == "SP.POP.GROW" | IndicatorCode == "SE.XPD.TOTL.GD.ZS" | IndicatorCode == "NY.GDP.PCAP.CD" | IndicatorCode == "SI.POV.GAPS" | IndicatorCode == "AG.LND.AGRI.ZS") %>%
+  select(CountryName, IndicatorName, Year, Value) %>% 
+  spread(IndicatorName, Value) %>%
+  rename(agricul.land = `Agricultural land (% of land area)` , unemployment = `Unemployment, total (% of total labor force)` , pov.gap = `Poverty gap at $1.90 a day (2011 PPP) (%)`, pop.growth = `Population growth (annual %)` , mort.rate = `Mortality rate, under-5 (per 1,000)` , gov.exp.edu = `Government expenditure on education as % of GDP (%)`, GDP.per.cap = `GDP per capita (current US$)`)
+  
+#View(all_in_all)
+new <- subset(all_in_all[ ,3:9])
+library(ggcorrplot)
+corr <- cor(new, use = "complete.obs")
+ggcorrplot(corr, method = "circle")
+```
+
+
+
