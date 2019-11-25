@@ -1,0 +1,89 @@
+---
+title: "Group Project 2"
+output: html_document
+---
+
+# 
+```{r}
+library(ggplot2)
+library(readr)
+library(RColorBrewer)
+library(stats)
+library(dplyr)
+library(reshape)
+
+Indicators <- read_csv("~/Desktop/EDA_DATA_MUNGING/Project2/EDA_project_2/world-development-indicators/Indicators.csv")
+
+Country <- read_csv("~/Desktop/EDA_DATA_MUNGING/Project2/EDA_project_2/world-development-indicators/Country.csv")
+
+#head(Indicators,10)
+
+BRICS<-c("BRA","CHN","IND","RUS","ZAF")
+
+military_exports <- subset(Indicators, IndicatorCode == "MS.MIL.XPRT.KD" & Year > 1991)
+
+military_imports <- subset(Indicators, IndicatorCode == "MS.MIL.MPRT.KD" & Year > 1991)
+
+total_reserves <- subset(Indicators, IndicatorCode == "FI.RES.TOTL.CD" & Year > 1991)
+
+total_reserves_without_gold <- subset(Indicators, IndicatorCode == "FI.RES.XGLD.CD" & Year > 1991)
+
+brics_uem_indicators <- subset(Indicators, IndicatorCode == "SL.UEM.TOTL.ZS" & Year > 1991)
+
+
+#VALUE OF ARMS EXPORTS OF BRICS COUNTRIES
+plot1<-ggplot(data=subset(military_exports, CountryCode %in%                               BRICS),aes(x=Year,y=Value,col=CountryName))+
+        geom_line(size=1)+ylab("Exports")+
+        ggtitle("ARMS EXPORTS OF BRICS COUNTRIES OVER THE YEARS")+
+        theme(text=element_text(colour="black",face="bold",size=12),
+        legend.title = element_text(colour="blue", size=16, face="bold"),
+        legend.text = element_text(colour="black", size = 10, face = "bold",family = "Times New Roman"),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+plot1
+
+#VALUE OF ARMS IMPORTS OF BRICS COUNTRIES
+plot2<-ggplot(data=subset(military_imports, CountryCode %in% BRICS),aes(x=Year,y=Value,col=CountryName))+
+        geom_line(size=1)+ylab("Imports")+
+        ggtitle("ARMS IMPORTS OF BRICS COUNTRIES OVER THE YEARS")+
+        theme(text=element_text(colour="black",face="bold",size=12),
+        legend.title = element_text(colour="blue", size=16, face="bold"),
+        legend.text = element_text(colour="black", size = 10, face = "bold",family = "Times New Roman"),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+
+plot2
+
+#TOTAL RESERVES OF BRICS COUNTRIES
+plot3<-ggplot(data=subset(total_reserves, CountryCode %in% BRICS),aes(x=Year,y=Value,col=CountryName))+
+        geom_line(size=1)+ylab("Total Reserves")+
+        ggtitle("TOTAL RESERVES OF BRICS COUNTRIES OVER THE YEARS")+
+        theme(text=element_text(colour="black",face="bold",size=12),
+        legend.title = element_text(colour="blue", size=16, face="bold"),
+        legend.text = element_text(colour="black", size = 10, face = "bold",family = "Times New Roman"),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+
+plot3
+
+#TOTAL RESERVES MINUS GOLD OF BRICS COUNTRIES
+plot4<-ggplot(data=subset(total_reserves_without_gold, CountryCode %in% BRICS),aes(x=Year,y=Value,col=CountryName))+
+        geom_line(size=1)+ylab("Total Reserves")+
+        ggtitle("TOTAL RESERVES MINUS GOLD OF BRICS COUNTRIES OVER THE YEARS")+
+        theme(text=element_text(colour="black",face="bold",size=12),
+        legend.title = element_text(colour="blue", size=16, face="bold"),
+        legend.text = element_text(colour="black", size = 10, face = "bold",family = "Times New Roman"),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+
+plot4
+
+
+# Unemployment Rate over years for BRICS
+plot5<-ggplot(data=subset(brics_uem_indicators, CountryCode %in% BRICS),aes(x=Year,y=Value,col=CountryName))+
+        geom_line(size=1)+ylab("Unemployment Rate")+
+        ggtitle("UNEMPLOYMENT RATE OF BRICS COUNTRIES OVER THE YEARS")+
+        theme(text=element_text(colour="black",face="bold",size=12),
+        legend.title = element_text(colour="blue", size=16, face="bold"),
+        legend.text = element_text(colour="black", size = 10, face = "bold",family = "Times New Roman"),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted")) 
+
+plot5
+```
+
