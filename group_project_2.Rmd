@@ -9,24 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
-# Load all the csv files
-Country <- read.csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/Country.csv")
-
-CountryNotes <- read.csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/CountryNotes.csv")
-
-Footnotes <- read.csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/Footnotes.csv")
-
-Indicators <- read.csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/Indicators.csv")
-
-Series <- read.csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/Series.csv", comment.char="#")
-
-SeriesNotes <- read.csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/SeriesNotes.csv")
-```
-
-Now that all our data is loaded in, the next step would be to list all of the different indicators present in this dataset.
-
-```{r}
+```{r message=FALSE, warning=FALSE}
 #Load in the needed packages
 library(ggplot2)
 library(reshape2)
@@ -34,6 +17,35 @@ library(dplyr)
 library(readr)
 library(plotly)
 library(tidyverse)
+library(ggvis)
+library(viridis)
+library(RColorBrewer)
+library(stats)
+library(reshape)
+```
+
+
+```{r}
+# Load all the csv files
+Country <- read_csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/Country.csv")
+
+CountryNotes <- read_csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/CountryNotes.csv")
+
+Footnotes <- read_csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/Footnotes.csv")
+
+Indicators <- read_csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/Indicators.csv")
+
+Series <- read_csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/Series.csv", 
+    comment = "#")
+
+
+SeriesNotes <- read_csv("~/working/data_science_folders/data_munging_EDA/group_project_2_munging/world-development-indicators/SeriesNotes.csv")
+```
+
+Now that all our data is loaded in, the next step would be to list all of the different indicators present in this dataset.
+
+```{r}
+
 
 #Make the country name a factor
 Indicators$CountryName <- as.factor(Indicators$CountryName)
@@ -147,6 +159,24 @@ ggplot(data = poverty_gap,
 ```
 
 
+```{r}
+poverty_gap <- subset(brics.Indicators, IndicatorCode == "SI.POV.GAPS")
+
+ggplot(data = poverty_gap, mapping = aes(x = CountryName, y= Value)) +
+  geom_boxplot()
+poverty_gap %>%
+  ggplot( aes(x=CountryName, y=Value, fill=CountryName)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.7, option="A") +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Violin chart showing how BRICS countries vary across poverty values") +
+    xlab("BRICS Countries") +
+    ylab("Poverty gap at $1.90 a day (2011 PPP) (%)")
+```
+
 
 ```{r}
 #Check for Poverty gap at $3.10 a day (2011 PPP) (%)
@@ -180,6 +210,24 @@ ggplot(data = poverty_gap,
 ```
 
 
+```{r}
+poverty_gap <- subset(brics.Indicators, IndicatorCode == "SI.POV.GAP2")
+
+ggplot(data = poverty_gap, mapping = aes(x = CountryName, y= Value)) +
+  geom_boxplot()
+poverty_gap %>%
+  ggplot( aes(x=CountryName, y=Value, fill=CountryName)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.7, option="A") +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Violin chart showing how BRICS countries vary across poverty values") +
+    xlab("BRICS Countries") +
+    ylab("Poverty gap at $3.10 a day (2011 PPP) (%)")
+```
+
 
 ```{r}
 #Check for Poverty headcount ratio at $1.90 a day
@@ -212,6 +260,24 @@ ggplot(data = poverty_gap,
   theme_classic()
 ```
 
+
+```{r}
+poverty_gap <- subset(brics.Indicators, IndicatorCode == "SI.POV.DDAY")
+
+ggplot(data = poverty_gap, mapping = aes(x = CountryName, y= Value)) +
+  geom_boxplot()
+poverty_gap %>%
+  ggplot( aes(x=CountryName, y=Value, fill=CountryName)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.7, option="A") +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Violin chart showing how BRICS countries vary across poverty values") +
+    xlab("BRICS Countries") +
+    ylab("Poverty headcount ratio at $1.90 a day (2011 PPP) (% of population)")
+```
 
 
 ```{r}
@@ -247,10 +313,29 @@ ggplot(data = poverty_gap,
 
 
 ```{r}
+poverty_gap <- subset(brics.Indicators, IndicatorCode == "SI.POV.2DAY")
+
+ggplot(data = poverty_gap, mapping = aes(x = CountryName, y= Value)) +
+  geom_boxplot()
+poverty_gap %>%
+  ggplot( aes(x=CountryName, y=Value, fill=CountryName)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.7, option="A") +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Violin chart showing how BRICS countries vary across poverty values") +
+    xlab("BRICS Countries") +
+    ylab("Poverty headcount ratio at $3.10 a day (2011 PPP) (% of population)")
+```
+
+
+```{r}
 #Check out Agricultural land (% of land area)
 agriculture_percent <- dplyr::filter(brics.Indicators, 
                       IndicatorCode == "AG.LND.AGRI.ZS" |
-                      IndicatorCode == "NY.GDP.PCAP.CD")  %>%
+                      IndicatorCode == "NY.GDP.PCAP.CD") %>%
   pivot_wider(names_from = "IndicatorCode",
               values_from = "Value")
 
@@ -285,30 +370,435 @@ ggplot(data = agriculture_percent,
 
 
 ```{r}
-agriculture_employment <- dplyr::filter(brics.Indicators, 
-                      IndicatorCode == "SL.AGR.EMPL.ZS" |
-                      IndicatorCode == "NY.GDP.PCAP.CD")  %>%
+#Check out Agricultural land (% of land area)
+agriculture_population <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "AG.LND.AGRI.ZS" |
+                      IndicatorCode == "SP.POP.GROW") %>%
   pivot_wider(names_from = "IndicatorCode",
               values_from = "Value")
 
-em_a <- filter(agriculture_employment, IndicatorName == "GDP per capita (current US$)") %>%
-  select(-IndicatorName, -SL.AGR.EMPL.ZS)
+agp_a <- filter(agriculture_population, IndicatorName == "Population growth (annual %)") %>%
+  select(-IndicatorName, -AG.LND.AGRI.ZS)
 
-em_b <- filter(agriculture_employment, IndicatorName == "Employment in agriculture (% of total employment)") %>%
-  select(CountryCode, SL.AGR.EMPL.ZS, Year)
+agp_b <- filter(agriculture_population, IndicatorName == "Agricultural land (% of land area)") %>%
+  select(CountryCode, AG.LND.AGRI.ZS, Year)
 
-agriculture_employment <- left_join(em_a, em_b, by = c("CountryCode" = "CountryCode", "Year" = "Year"))
+agriculture_population <- left_join(agp_a, agp_b, by = c("CountryCode" = "CountryCode", "Year" = "Year"))
 
-ggplot(data = agriculture_employment,
-       aes(x = SL.AGR.EMPL.ZS,
-           y = NY.GDP.PCAP.CD,
+start <- filter(agriculture_population, Year == 1961 | Year == 1992 & CountryName == "Russian Federation")
+
+ggplot(data = agriculture_population,
+       aes(x = AG.LND.AGRI.ZS,
+           y = SP.POP.GROW,
            color = CountryName)) +
   geom_path() +
-  geom_point() +
+  geom_point(data = start,
+             aes(
+               x = AG.LND.AGRI.ZS,
+               y = SP.POP.GROW)
+             ) +
   xlim(0,100) +
-  labs(y = "GDP per capita",
-       x = "Employment in agriculture (% of total employment)",
-       title = "A decrease in the employment of agriculture does lead to an increase in GDP"
+  labs(y = "Population growth (annual %)",
+       x = "Agricultural land (% of land area)",
+       title = "No discernible relationship between population growth and agricultural land over time",
+       caption = "Dot indicates first year of data."
        ) + 
   theme_classic()
 ```
+
+
+```{r}
+#Check the Agriculture, value added (% of GDP)
+agrilcuture_value <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "NV.AGR.TOTL.ZS" |
+                      IndicatorCode == "NY.GDP.PCAP.CD") %>%
+  pivot_wider(names_from = "IndicatorCode",
+              values_from = "Value")
+
+av_a <- filter(agrilcuture_value, IndicatorName == "GDP per capita (current US$)") %>%
+  select(-IndicatorName, -NV.AGR.TOTL.ZS)
+
+av_b <- filter(agrilcuture_value, IndicatorName == "Agriculture, value added (% of GDP)") %>%
+  select(CountryCode, NV.AGR.TOTL.ZS, Year)
+
+agrilcuture_value <- left_join(av_a, av_b, by = c("CountryCode" = "CountryCode", "Year" = "Year"))
+
+start <- filter(agrilcuture_value, Year == 1961 | Year == 1992 & CountryName == "Russian Federation")
+
+ggplot(data = agrilcuture_value,
+       aes(x = NV.AGR.TOTL.ZS,
+           y = NY.GDP.PCAP.CD)) +
+  geom_path() +
+  geom_point(data = start,
+             aes(
+               x = NV.AGR.TOTL.ZS,
+               y = NY.GDP.PCAP.CD)
+             ) +
+  facet_grid(.~CountryName) +
+  xlim(0,50) +
+  labs(y = "GDP per capita",
+       x = "Agriculture, value added (% of GDP)",
+       title = "Overall contribution from agriculture doesn't seem to impact increases in GDP",
+       caption = "Dot indicates first year of data."
+       ) + 
+  theme_classic()
+```
+
+
+```{r}
+library(plotly)
+
+all_countries <- Indicators %>%
+  select(CountryCode) %>%
+  group_by(CountryCode) %>%
+  summarise()
+
+#Check the Agriculture, value added (% of GDP)
+agrilcuture_value <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "NV.AGR.TOTL.ZS" |
+                      IndicatorCode == "NY.GDP.PCAP.CD") %>%
+  pivot_wider(names_from = "IndicatorCode",
+              values_from = "Value")
+
+av_a <- filter(agrilcuture_value, IndicatorName == "GDP per capita (current US$)") %>%
+  select(-IndicatorName, -NV.AGR.TOTL.ZS)
+
+av_b <- filter(agrilcuture_value, IndicatorName == "Agriculture, value added (% of GDP)") %>%
+  select(CountryCode, NV.AGR.TOTL.ZS, Year)
+
+agrilcuture_value <- left_join(av_a, av_b, by = c("CountryCode" = "CountryCode", "Year" = "Year"))
+
+
+agrilcuture_value <- left_join(all_countries, agrilcuture_value, by = "CountryCode") 
+
+
+agrilcuture_value$NV.AGR.TOTL.ZS <- replace_na(agrilcuture_value$NV.AGR.TOTL.ZS, 0)
+
+
+# light grey boundaries
+l <- list(color = toRGB("grey"), width = 0.5)
+
+# specify map projection/options
+g <- list(
+  showframe = FALSE,
+  showcoastlines = FALSE,
+  projection = list(type = 'Albers')
+)
+
+p <- plot_geo(agrilcuture_value) %>%
+  add_trace(
+    z = ~NV.AGR.TOTL.ZS,
+    color = ~NV.AGR.TOTL.ZS, 
+    colors = 'Blues',
+    text = ~CountryName, 
+    locations = ~CountryCode, 
+    marker = list(line = l)
+  ) %>%
+  colorbar(title = 'Agriculture, value added (% of GDP)') %>%
+  layout(
+    title = '',
+    geo = g
+  )
+p
+```
+
+
+```{r}
+mortality_rate_under_5 <- subset(brics.Indicators, IndicatorCode == "SH.DYN.MORT")
+
+ggplot(data = mortality_rate_under_5, aes(Year, Value)) +
+    geom_line(aes(color = CountryCode), size = 0.85) +
+    scale_x_continuous(breaks = seq(1960, 2014, 5)) +
+    theme_bw(base_size = 12, base_family = "Helvetica") +
+    theme_classic() +
+    ggtitle("Mortality rate for BRICS countries steadily decreases") +
+    ylab("Mortality rate, under-5")
+```
+
+
+```{r}
+#subsetting for BRICS countries
+brics <- Indicators %>%
+  filter(Indicators$CountryName == "Brazil" | Indicators$CountryName == "India" | Indicators$CountryName == "South Africa" | Indicators$CountryName == "Russian Federation" | Indicators$CountryName == "China")
+
+#View(brics)
+
+ggplot(data = mortality_rate_under_5, mapping = aes(x = CountryName, y= Value)) +
+  geom_boxplot()
+mortality_rate_under_5 %>%
+  ggplot( aes(x=CountryName, y=Value, fill=CountryName)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.7, option="A") +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Distribution of mortality rates highlights differences in each countries path to lower infant mortality") +
+    xlab("BRICS Countries")
+```
+
+
+```{r}
+#Check out Mortality rate, under-5
+population_mortality <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "SH.DYN.MORT" |
+                      IndicatorCode == "SP.POP.GROW") %>%
+  pivot_wider(names_from = "IndicatorCode",
+              values_from = "Value")
+
+m_a <- filter(population_mortality, IndicatorName == "Mortality rate, under-5 (per 1,000)") %>%
+  select(-IndicatorName, -SP.POP.GROW)
+
+m_b <- filter(population_mortality, IndicatorName == "Population growth (annual %)") %>%
+  select(CountryCode, SP.POP.GROW, Year)
+
+population_mortality <- left_join(m_a, m_b, by = c("CountryCode" = "CountryCode", "Year" = "Year"))
+
+start <- filter(population_mortality, Year == 1960 | Year == 1970 & CountryName == "Russian Federation" | Year == 1969 & CountryName == "China" | Year == 1974 & CountryName == "South Africa")
+
+ggplot(data = population_mortality,
+       aes(x = SH.DYN.MORT,
+           y = SP.POP.GROW,
+           color = CountryName)) +
+  geom_path() +
+  geom_point(data = start,
+             aes(
+               x = SH.DYN.MORT,
+               y = SP.POP.GROW)
+             ) +
+  labs(y = "Population growth (annual %)",
+       x = "Mortality rate, under-5",
+       title = "",
+       caption = "Dot indicates first year of data."
+       ) + 
+  theme_classic() +
+  ggtitle("Mortality rate decrease also shows a decrease in the population growth as well")
+```
+
+
+```{r}
+unemployment_rate <- subset(brics.Indicators, IndicatorCode == "SL.UEM.TOTL.ZS")
+
+ggplot(data = unemployment_rate, aes(Year, Value)) +
+    geom_line(aes(color = CountryCode), size = 0.85) +
+    scale_x_continuous(breaks = seq(1960, 2014, 5)) +
+    theme_bw(base_size = 12, base_family = "Helvetica") +
+    theme_classic() +
+    ggtitle("Unemployment remains low for the most part other than for South Africa") +
+    ylab("Unemployment,total (% of total labor force) (modeled ILO estimate)")
+```
+
+
+```{r}
+ggplot(data = unemployment_rate, mapping = aes(x = CountryName, y= Value)) +
+  geom_boxplot()
+unemployment_rate %>%
+  ggplot( aes(x=CountryName, y=Value, fill=CountryName)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.7, option="A") +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Unemployment,total (% of total labor force) (modeled ILO estimate)") +
+    xlab("BRICS Countries")
+```
+
+
+```{r}
+#Check out education against unemployment
+unemployment_education <- dplyr::filter(brics.Indicators, 
+                      IndicatorCode == "SL.UEM.TOTL.ZS" |
+                      IndicatorCode == "SE.XPD.TOTL.GD.ZS") %>%
+  pivot_wider(names_from = "IndicatorCode",
+              values_from = "Value")
+
+pm_a <- filter(unemployment_education, IndicatorName == "Government expenditure on education as % of GDP (%)") %>%
+  select(-IndicatorName, -SL.UEM.TOTL.ZS)
+
+pm_b <- filter(unemployment_education, IndicatorName == "Unemployment, total (% of total labor force)") %>%
+  select(CountryCode, SL.UEM.TOTL.ZS, Year)
+
+unemployment_education <- left_join(pm_a, pm_b, by = c("CountryCode" = "CountryCode", "Year" = "Year"))
+
+start <- filter(unemployment_education, Year == 1991 | Year == 2000 & CountryName == "Russian Federation" | Year == 1992 & CountryName == "China" | Year == 1995 & CountryName == "Brazil"| Year == 1997 & CountryName == "India")
+
+ggplot(data = unemployment_education,
+       aes(x = SL.UEM.TOTL.ZS,
+           y = SE.XPD.TOTL.GD.ZS	,
+           color = CountryName)) +
+  geom_path() +
+  geom_point(data = start,
+             aes(
+               x = SL.UEM.TOTL.ZS,
+               y = SE.XPD.TOTL.GD.ZS	)
+             ) +
+  labs(y = "Unemployment,total (% of total labor force) (modeled ILO estimate)",
+       x = "Government expenditure on education, total (% of GDP)",
+       title = "",
+       caption = "Dot indicates first year of data."
+       ) + 
+  theme_classic() +
+  ggtitle("")
+```
+
+
+```{r}
+population_growth_rate <- subset(brics.Indicators, IndicatorCode == "SP.POP.GROW")
+
+ggplot(data = population_growth_rate, aes(Year, Value)) +
+    geom_line(aes(color = CountryCode), size = 0.85) +
+    scale_x_continuous(breaks = seq(1960, 2014, 5)) +
+    theme_bw(base_size = 12, base_family = "Helvetica") +
+    theme_classic() +
+    ggtitle("All BRICS countries steadily decrease their annual growth rates") +
+    ylab("Population growth (annual %)")
+```
+
+
+```{r}
+ggplot(data = population_growth_rate, mapping = aes(x = CountryName, y= Value)) +
+  geom_boxplot()
+population_growth_rate %>%
+  ggplot( aes(x=CountryName, y=Value, fill=CountryName)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.7, option="A") +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Population growth (annual %)") +
+    xlab("BRICS Countries")
+```
+
+
+```{r}
+govt_exp_edu <- subset(brics.Indicators, IndicatorCode == "SE.XPD.TOTL.GD.ZS")
+
+ggplot(data = govt_exp_edu, aes(Year, Value)) +
+    geom_line(aes(color = CountryCode), size = 0.85) +
+    scale_x_continuous(breaks = seq(1960, 2014, 5)) +
+    theme_bw(base_size = 12, base_family = "Helvetica") +
+    theme_classic() +
+    ggtitle("Education spending differs substantially across countries and over time") +
+    ylab("Government expenditure on education, total (% of GDP)")
+```
+
+
+```{r}
+ggplot(data = govt_exp_edu, mapping = aes(x = CountryName, y= Value)) +
+  geom_boxplot()
+govt_exp_edu %>%
+  ggplot( aes(x=CountryName, y=Value, fill=CountryName)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.7, option="A") +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Population growth (annual %)") +
+    xlab("BRICS Countries")
+```
+
+
+```{r}
+brics <- Indicators %>%
+  filter(Indicators$CountryName == "Brazil" | Indicators$CountryName == "India" | Indicators$CountryName == "South Africa" | Indicators$CountryName == "Russian Federation" | Indicators$CountryName == "China")
+
+#Filter four different expenditures as % of GDP
+expenditures <- brics %>%
+  filter(brics$IndicatorName == "Military expenditure (% of GDP)" | brics$IndicatorName == "Research and development expenditure (% of GDP)" | brics$IndicatorName == "Health expenditure, total (% of GDP)" | brics$IndicatorName == "Government expenditure on education as % of GDP (%)")
+
+#View(expenditures)
+ggplot(data=expenditures, aes(x=stringr::str_wrap(CountryName, 10), y=Value, fill=IndicatorName)) +
+  geom_bar(stat="identity") + 
+  xlab("BRICS Countries")
+```
+
+
+```{r}
+BRICS<-c("BRA","CHN","IND","RUS","ZAF")
+military_exports <- subset(Indicators, IndicatorCode == "MS.MIL.XPRT.KD" & Year > 1991)
+military_imports <- subset(Indicators, IndicatorCode == "MS.MIL.MPRT.KD" & Year > 1991)
+total_reserves <- subset(Indicators, IndicatorCode == "FI.RES.TOTL.CD" & Year > 1991)
+total_reserves_without_gold <- subset(Indicators, IndicatorCode == "FI.RES.XGLD.CD" & Year > 1991)
+brics_uem_indicators <- subset(Indicators, IndicatorCode == "SL.UEM.TOTL.ZS" & Year > 1991)
+
+#VALUE OF ARMS EXPORTS OF BRICS COUNTRIES
+plot1<-ggplot(data=subset(military_exports, CountryCode %in% BRICS),aes(x=Year,y=Value,col=CountryName))+
+        geom_line(size=1)+ylab("Exports")+
+        ggtitle("ARMS EXPORTS OF BRICS COUNTRIES OVER THE YEARS")+
+        theme(text=element_text(colour="black",face="bold",size=12),
+        legend.title = element_text(colour="blue", size=16, face="bold"),
+        legend.text = element_text(colour="black", size = 10, face = "bold",family = "Times New Roman"),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+plot1
+```
+
+
+```{r}
+#VALUE OF ARMS IMPORTS OF BRICS COUNTRIES
+plot2<-ggplot(data=subset(military_imports, CountryCode %in% BRICS),aes(x=Year,y=Value,col=CountryName))+
+        geom_line(size=1)+ylab("Imports")+
+        ggtitle("ARMS IMPORTS OF BRICS COUNTRIES OVER THE YEARS")+
+        theme(text=element_text(colour="black",face="bold",size=12),
+        legend.title = element_text(colour="blue", size=16, face="bold"),
+        legend.text = element_text(colour="black", size = 10, face = "bold",family = "Times New Roman"),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+plot2
+```
+
+
+```{r}
+#TOTAL RESERVES OF BRICS COUNTRIES
+plot3<-ggplot(data=subset(total_reserves, CountryCode %in% BRICS),aes(x=Year,y=Value,col=CountryName))+
+        geom_line(size=1)+ylab("Total Reserves")+
+        ggtitle("TOTAL RESERVES OF BRICS COUNTRIES OVER THE YEARS")+
+        theme(text=element_text(colour="black",face="bold",size=12),
+        legend.title = element_text(colour="blue", size=16, face="bold"),
+        legend.text = element_text(colour="black", size = 10, face = "bold",family = "Times New Roman"),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+plot3
+```
+
+
+```{r}
+#TOTAL RESERVES MINUS GOLD OF BRICS COUNTRIES
+plot4<-ggplot(data=subset(total_reserves_without_gold, CountryCode %in% BRICS),aes(x=Year,y=Value,col=CountryName))+
+        geom_line(size=1)+ylab("Total Reserves")+
+        ggtitle("TOTAL RESERVES MINUS GOLD OF BRICS COUNTRIES OVER THE YEARS")+
+        theme(text=element_text(colour="black",face="bold",size=12),
+        legend.title = element_text(colour="blue", size=16, face="bold"),
+        legend.text = element_text(colour="black", size = 10, face = "bold",family = "Times New Roman"),
+        legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+plot4
+```
+
+
+```{r}
+all_in_all <- brics %>%
+  filter(IndicatorCode == "SL.UEM.TOTL.ZS" | IndicatorCode == "SH.DYN.MORT" | IndicatorCode == "SP.POP.GROW" | IndicatorCode == "SE.XPD.TOTL.GD.ZS" | IndicatorCode == "NY.GDP.PCAP.CD" | IndicatorCode == "SI.POV.GAPS" | IndicatorCode == "AG.LND.AGRI.ZS") %>%
+  select(CountryName, IndicatorName, Year, Value) %>% 
+  spread(IndicatorName, Value) %>%
+  dplyr::rename(
+    agricul.land = `Agricultural land (% of land area)`, 
+    unemployment = `Unemployment, total (% of total labor force)`, 
+    pov.gap = `Poverty gap at $1.90 a day (2011 PPP) (%)`, 
+    pop.growth = `Population growth (annual %)` , 
+    mort.rate = `Mortality rate, under-5 (per 1,000)`, 
+    gov.exp.edu = `Government expenditure on education as % of GDP (%)`, 
+    GDP.per.cap = `GDP per capita (current US$)`
+    )
+  
+#View(all_in_all)
+new <- subset(all_in_all[ ,3:9])
+library(ggcorrplot)
+corr <- cor(new, use = "complete.obs")
+ggcorrplot(corr, method = "circle")
+```
+
+
+
+
+
+
